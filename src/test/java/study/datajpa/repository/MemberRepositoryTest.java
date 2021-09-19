@@ -150,6 +150,32 @@ class MemberRepositoryTest {
     }
 
     @Test
+    void HintTest() {
+        Member member1 = new Member("AAA", 10);
+        memberRepository.save(member1);
+
+        em.flush();
+        em.clear();
+
+        Member aaa = memberRepository.findReadOnlyByUsername("AAA");
+        aaa.setUsername("hihih");
+
+        em.flush();
+    }
+
+    @Test
+    void LockTest() {
+        Member member1 = new Member("AAA", 10);
+        memberRepository.save(member1);
+
+        em.flush();
+        em.clear();
+
+        List<Member> members = memberRepository.findLockByUsername("AAA");
+
+    }
+
+    @Test
     void dtoTest() {
         Team team = new Team("teamA");
         teamRepository.save(team);
@@ -163,6 +189,41 @@ class MemberRepositoryTest {
             System.out.println("dto = " + dto);
         }
     }
+
+
+    @Test
+    public void callCustom() {
+        Member member1 = new Member("AAA", 10);
+        memberRepository.save(member1);
+
+        em.flush();
+        em.clear();
+
+        List<Member> members = memberRepository.findMemberCustom();
+
+
+    }
+
+    @Test
+    public void JpaEventBaseEntity() throws Exception{
+        Member member = new Member("member1");
+        memberRepository.save(member);
+
+        Thread.sleep(100);
+        member.setUsername("member2");
+
+        em.flush();
+        em.clear();
+
+        Member findMember = memberRepository.findById(member.getId()).get();
+
+        System.out.println("findMember.getCreateDate() = " + findMember.getCreatedDate());
+        System.out.println("findMember.getUpdateDate() = " + findMember.getLastModifiedDate());
+
+
+    }
+
+
 
     @Test
     void fetch() {
